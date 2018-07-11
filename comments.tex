@@ -1,0 +1,218 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[top=0.85in,left=2.75in,footskip=0.75in,marginparwidth=2in]{geometry}
+
+% use Unicode characters - try changing the option if you run into troubles with special characters (e.g. umlauts)
+\usepackage[utf8]{inputenc}
+
+% clean citations
+\usepackage{cite}
+
+% hyperref makes references clicky. use \url{www.example.com} or \href{www.example.com}{description} to add a clicky url
+\usepackage{nameref,hyperref}
+
+% line numbers
+\usepackage[right]{lineno}
+
+% improves typesetting in LaTeX
+\usepackage{microtype}
+\DisableLigatures[f]{encoding = *, family = * }
+
+% text layout - change as needed
+\raggedright
+\setlength{\parindent}{0.5cm}
+\textwidth 5.25in 
+\textheight 8.75in
+
+% Remove % for double line spacing
+%\usepackage{setspace} 
+%\doublespacing
+
+% use adjustwidth environment to exceed text width (see examples in text)
+\usepackage{changepage}
+
+% adjust caption style
+\usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,singlelinecheck=off]{caption}
+
+% remove brackets from references
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+
+% headrule, footrule and page numbers
+\usepackage{lastpage,fancyhdr,graphicx}
+\usepackage{epstopdf}
+\pagestyle{myheadings}
+\pagestyle{fancy}
+\fancyhf{}
+\rfoot{\thepage/\pageref{LastPage}}
+\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
+\fancyheadoffset[L]{2.25in}
+\fancyfootoffset[L]{2.25in}
+
+% use \textcolor{color}{text} for colored text (e.g. highlight to-do areas)
+\usepackage{color}
+
+% define custom colors (this one is for figure captions)
+\definecolor{Gray}{gray}{.25}
+
+% this is required to include graphics
+\usepackage{graphicx}
+
+% use if you want to put caption to the side of the figure - see example in text
+\usepackage{sidecap}
+
+% use for have text wrap around figures
+\usepackage{wrapfig}
+\usepackage[pscoord]{eso-pic}
+\usepackage[fulladjust]{marginnote}
+\reversemarginpar
+
+% Adding multirow.
+\usepackage{multirow}
+
+% Other required things:
+\usepackage{color}
+\usepackage{subcaption}
+\captionsetup[subfigure]{justification=centering}
+
+% document begins here
+\begin{document}
+\vspace*{0.35in}
+
+% title goes here:
+\begin{flushleft}
+{\Large
+    \textbf\newline{Too much magic: avoiding illusions in single cell RNA sequencing data analysis}
+}
+\newline
+
+% authors go here:
+%\\
+Timothy Curtis\textsuperscript{1,*}
+\\
+\bigskip
+\bf{1} Diagon Institute of Computational Biology, London, United Kingdom \\
+\bigskip
+
+\end{flushleft}
+
+A new imputation method ``MAGIC" \cite{vandijk2018recovering} has recently been proposed for analyzing single-cell RNA sequencing (scRNA-seq) data.
+This method involves constructing an affinity matrix based on the distances between cells in high-dimensional space;
+applying a diffusion process to strengthen similarities between cells due to existing trends in the data;
+and multiplying the exponentiated affinity matrix with the original count matrix to obtain denoised expression values for downstream analysis.
+The authors claim that the use of MAGIC removes technical noise and improves the biological signal in scRNA-seq data.
+Indeed, the noisy nature of scRNA-seq data has been documented \cite{grun2015design} and many computational methods have been developed to address this problem \cite{bacher2016design}.
+Unfortunately - as we will argue below - using MAGIC is not the solution.
+
+The raison d'\^etre of the MAGIC procedure is the use of the diffusion process to reinforce existing trends.
+The affinity matrix is exponentiated to represent the probability of one cell reaching another via a number of intermediate cells.
+This procedure systematically increases the affinities between pairs of cells that are connected by many close neighbours.
+Conversely, affinities are downweighted between pairs of cells in sparse regions of the high dimensional space, where similarities are more likely to be caused by noise or outliers.
+By performing diffusion, MAGIC can achieve aggressive denoising compared to other methods like $k$-NN imputation.
+However, this also runs the risk of introducing spurious structure in the denoised expression matrix.
+
+This effect is best demonstrated with a simple simulation.
+We applied MAGIC to a simulated matrix of Poisson-distributed counts that contained no structure.
+Upon performing a principal components analysis (PCA) on the denoised expression matrix, we observed that the first principal component (PC) explained much more variance (Figure~\ref{fig:nostructure}a) than expected under randomness (Figure~\ref{fig:nostructure}b).
+This is a manifestation of spurious structure whereby an artificial ``trajectory'' along the first PC is manufactured from nothing.
+Increasing the diffusion time exacerbated the consolidation of variance into the first PC (Figure~\ref{fig:nostructure}c), consistent with self-reinforcement of the diffusion process.
+While the creation of artificial structure is obviously undesirable, the interpretation of denoised expression values at the gene level is even more compromised.
+After running MAGIC, genes that were truly independent now appear to be strongly co-regulated (Figure~\ref{fig:nostructure}d), whereas no such effect is observed on the original data (Figure~\ref{fig:nostructure}e).
+
+\begin{figure}[btp]
+\centering
+\begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth,trim=0mm 5mm 0mm 15mm,clip,page=1]{pics/nostructure_with_magic.pdf}
+    \caption{}
+\end{subfigure}
+\begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth,trim=0mm 5mm 0mm 15mm,clip,page=1]{pics/nostructure_without_magic.pdf}
+    \caption{}
+\end{subfigure}
+\begin{subfigure}[b]{\textwidth}
+    \includegraphics[width=\textwidth,trim=0mm 5mm 0mm 15mm,clip]{pics/nostructure_time.pdf}
+    \caption{}
+\end{subfigure}
+\begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth,trim=0mm 5mm 0mm 15mm,clip,page=2]{pics/nostructure_with_magic.pdf}
+    \caption{}
+\end{subfigure}
+\begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth,trim=0mm 5mm 0mm 15mm,clip,page=2]{pics/nostructure_without_magic.pdf}
+    \caption{}
+\end{subfigure}
+\caption{Effects of applying MAGIC to a simulated dataset containing independently sampled Poisson counts with no structure.
+(a) Plot of the first two PCs after performing PCA on the log-transformed denoised expression matrix.
+Each point represents a cell and the percentage of variance explained by each PC is shown in parentheses.
+(b) Same as (a) but on the log-transformed normalized counts without running MAGIC.
+(c) Effect of diffusion time on the percentage of variance explained by the first PC.
+(d) Log-denoised expression values of the two genes with the highest pairwise correlation, after running MAGIC.
+Each point represents a cell.
+(e) Same as (d) but without running MAGIC.}
+\label{fig:nostructure}
+\end{figure}
+
+One might dismiss the previous simulation as being somewhat pathological.
+After all, there are no biological systems that exhibit no structure whatsoever.
+Perhaps a more pertinent question would be: how does MAGIC perform in the presence of genuine structure? 
+To explore this, we performed another simulation involving four equally sized subpopulations of cells, denoted here as $A$, $B$, $C$ and $D$.
+The primary separation occurs between $\{A, B\}$ and $\{C, D\}$, with a secondary separation between $A/B$ and $C/D$.
+Application of MAGIC eliminated the secondary separation (Figure~\ref{fig:fourclusters}a), merging $A$ with $B$ and $C$ with $D$.
+This is again a consequence of the diffusion process, where weak similarities are increasingly strengthened over diffusion time.
+Specifically, the affinities between cells in $A$ and $B$ (or $C$ and $D$) increase upon exponentiation,
+resulting in greater sharing of information between those pairs of subpopulations during the denoising step.
+This squeezes the populations together and misrepresents the data by eliminating structure that is otherwise clearly visible without MAGIC (Figure~\ref{fig:fourclusters}b).
+
+\begin{figure}[btp]
+\centering
+\begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth,page=1]{pics/minor_with_magic.pdf}
+    \caption{}
+\end{subfigure}
+\begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth,page=1]{pics/minor_without_magic.pdf}
+    \caption{}
+\end{subfigure}
+\caption{Plot of the first two PCs (a) after running MAGIC and (b) without running MAGIC, in a simulation containing four well-separated subpopulations of cells.
+Each point represents a cell and is coloured green (subpopulations $A$ and $C$) or orange ($B$ or $D$).
+$A$ and $B$ are represented by open circles while $C$ and $D$ are represented by crosses.
+The percentage of variance explained by each PC is shown in parentheses.}
+\label{fig:fourclusters}
+\end{figure}
+
+We also inspected the gene-wise denoised expression profiles in another simulation involving two well-separated subpopulations.
+As expected, we observed strong separation between the two subpopulations regardless of whether MAGIC was used (Figure~\ref{fig:twoclusters}).
+However, MAGIC also introduced spurious differences in expression between the two subpopulations among the non-DE genes (Figure~\ref{fig:twoclusters}a).
+This is a consequence of sharing information between neighbouring cells, which squeezes the expression values for all cells towards their subpopulation means.
+Estimation uncertainty will yield a different sample mean for each subpopulation, even for non-DE genes.
+These small differences are amplified by aggressive denoising, manifesting as in strong differences in the distribution of expression values betweeen subpopulations.
+One could argue that this spurious DE pattern is not of concern as the log-fold changes for the genes involved are relatively small (less than 0.2 in most cases).
+However, this attitude is not consistent with the intention behind the use of denoising in the first place, 
+i.e., to recover subtle biological changes that would otherwise be masked by technical noise.
+
+\begin{figure}[btp]
+\centering
+\begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth,page=1]{pics/clusters_with_magic.png}
+    \caption{}
+\end{subfigure}
+\begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth,page=1]{pics/clusters_without_magic.png}
+    \caption{}
+\end{subfigure}
+\caption{Heatmap of log$_2$-expression values (a) after running MAGIC and (b) without running MAGIC, in a simulation containing two well-separated subpopulations of cells.
+Each column represents a cell and is labelled according to the subpopulation (i.e., cluster) to which it belongs.
+Each row represents a gene that is sorted by log-fold change betwee subpopulations and labelled according to whether it is truly DE.
+All log-expression values are mean-centered along each row and capped at 0.2 for visibility.}
+\label{fig:twoclusters}
+\end{figure}
+
+Here, we have provided three simple simulation scenarios in which the application of MAGIC yields a distorted representation of the data.
+This is primarily driven by the use of data diffusion, though some of these issues may generalize to other denoising or imputation approaches.
+We recommend treating results generated by MAGIC with some caution, especially if they are not reproducible with conventional analysis strategies.
+
+\bibliography{ref}
+\bibliographystyle{unsrt}
+
+
+\end{document}
