@@ -105,17 +105,19 @@ Indeed, the noisy nature of scRNA-seq data has been documented \cite{grun2015des
 Unfortunately - as we will argue below - using MAGIC is not the solution.
 
 The raison d'\^etre of the MAGIC procedure is the use of the diffusion process to reinforce existing trends.
-The affinity matrix is exponentiated to represent the probability of one cell reaching another via a number of intermediate cells.
+The affinity matrix is exponentiated to represent the probability of one cell reaching another via a random walk of length $t$, possibly involving a number of intermediate cells.
 This procedure systematically increases the affinities between pairs of cells that are connected by many close neighbours.
-Conversely, affinities are downweighted between pairs of cells in sparse regions of the high dimensional space, where similarities are more likely to be caused by noise or outliers.
+Conversely, affinities are downweighted between pairs of cells in sparse regions of the high dimensional space, 
+where sporadic similarities are more likely to be caused by technical noise or outliers.
 By performing diffusion, MAGIC can achieve aggressive denoising compared to other methods like $k$-NN imputation.
 However, this also runs the risk of introducing spurious structure in the denoised expression matrix.
 
 This effect is best demonstrated with a simple simulation.
 We applied MAGIC to a simulated matrix of Poisson-distributed counts that contained no structure.
-Upon performing a principal components analysis (PCA) on the denoised expression matrix, we observed that the first principal component (PC) explained much more variance (Figure~\ref{fig:nostructure}a) than expected under randomness (Figure~\ref{fig:nostructure}b).
-This is a manifestation of spurious structure whereby an artificial ``trajectory'' along the first PC is manufactured from nothing.
-Increasing the diffusion time exacerbated the consolidation of variance into the first PC (Figure~\ref{fig:nostructure}c), consistent with self-reinforcement of the diffusion process.
+Upon performing a principal components analysis (PCA) on the denoised expression matrix, we observed a ``trajectory'' of cells along the first principal component (PC) (Figure~\ref{fig:nostructure}a) that was not present with the original expression matrix (Figure~\ref{fig:nostructure}b).
+This trajectory is a manifestation of spurious structure in a count matrix that should have been random.
+It likely arises from stochastic differences in the affinity matrix that are inflated during diffusion.
+Indeed, increasing the diffusion time exacerbated the consolidation of variance into the first PC (Figure~\ref{fig:nostructure}c), consistent with self-reinforcement of the diffusion process.
 While the creation of artificial structure is obviously undesirable, the interpretation of denoised expression values at the gene level is even more compromised.
 After running MAGIC, genes that were truly independent now appear to be strongly co-regulated (Figure~\ref{fig:nostructure}d), whereas no such effect is observed on the original data (Figure~\ref{fig:nostructure}e).
 
