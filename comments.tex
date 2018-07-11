@@ -158,13 +158,14 @@ One might dismiss the previous simulation as being somewhat pathological.
 After all, there are no biological systems that exhibit no structure whatsoever.
 Perhaps a more pertinent question would be: how does MAGIC perform in the presence of genuine structure? 
 To explore this, we performed another simulation involving four equally sized subpopulations of cells, denoted here as $A$, $B$, $C$ and $D$.
-The primary separation occurs between $\{A, B\}$ and $\{C, D\}$, with a secondary separation between $A/B$ and $C/D$.
+The primary separation occurs between $\{A, B\}$ and $\{C, D\}$ and the secondary separation occurs between $A/B$ and $C/D$.
 Application of MAGIC eliminated the secondary separation (Figure~\ref{fig:fourclusters}a), merging $A$ with $B$ and $C$ with $D$.
-This is again a consequence of the diffusion process, where weak similarities are increasingly strengthened over diffusion time.
-Specifically, the affinities between cells in $A$ and $B$ (or $C$ and $D$) increase upon exponentiation,
-resulting in greater sharing of information between those pairs of subpopulations during the denoising step.
-This squeezes the populations together and eliminates geniune structure that is otherwise clearly visible (Figure~\ref{fig:fourclusters}b).
+This is again a consequence of the diffusion process, where weak similarities between cells in $A$ and $B$ (or $C$ and $D$) are increasingly strengthened over diffusion time.
+More information is subsequently shared between those pairs of subpopulations during the denoising step.
+This squeezes the subpopulations together and eliminates geniune structure that is otherwise clearly visible (Figure~\ref{fig:fourclusters}b).
 At worst, this may lead one to conclude that $A$ and $B$ form a trajectory rather than being distinct subpopulations.
+Furthermore, the squeezing effect interferes with gene-level interpretation of the denosied expression values. 
+Log-fold changes are shrunk towards zero for the subset of genes responsible for the secondary separation (Figure~\ref{fig:fourclusters}c, d).
 
 \begin{figure}[btp]
 \centering
@@ -176,10 +177,23 @@ At worst, this may lead one to conclude that $A$ and $B$ form a trajectory rathe
     \includegraphics[width=\textwidth,page=1]{scripts/pics/minor_without_magic.pdf}
     \caption{}
 \end{subfigure}
-\caption{Plot of the first two PCs (a) after running MAGIC and (b) without running MAGIC, in a simulation containing four well-separated subpopulations of cells.
+\begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth,page=2]{scripts/pics/minor_with_magic.pdf}
+    \caption{}
+\end{subfigure}
+\begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth,page=2]{scripts/pics/minor_without_magic.pdf}
+    \caption{}
+\end{subfigure}
+\caption{Effects of applying MAGIC to a simulated dataset containing four well-separated subpopulations of cells.
+(a) Plot of the first two PCs, created using the denoised expression values from MAGIC.
 Each point represents a cell and is coloured green (subpopulations $A$ and $C$) or orange ($B$ or $D$).
 $A$ and $B$ are represented by open circles while $C$ and $D$ are represented by crosses.
-The percentage of variance explained by each PC is shown in parentheses.}
+The percentage of variance explained by each PC is shown in parentheses.
+(b) Same as (a) but using the original counts.
+(c) Log-fold changes with respect to the primary or secondary separations, computed from the denoised expression values.
+Each point represents a gene and is coloured according to whether it is DE (blue) or not (grey).
+(d) Same as (c) but using the original (log-)counts.}
 \label{fig:fourclusters}
 \end{figure}
 
