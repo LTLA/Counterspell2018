@@ -1,9 +1,19 @@
 #' Runs PCA on a matrix of log-counts.
-run_PCA = function(log_counts, plot=TRUE, pch=16, ...) {
+run_PCA = function(log_counts, plot=TRUE, pch=16, ..., xlim=NULL, ylim=NULL, same_xy=FALSE) {
     PCA = prcomp(log_counts)
     var_exp = PCA$sdev^2 
+
     if (plot) { 
-        plot(PCA$x[,1], PCA$x[,2], ..., pch=pch,
+        X = PCA$x[,1]
+        Y = PCA$x[,2]
+
+        if (same_xy) {
+            xlim = range(X)
+            ylim = range(Y)
+            xlim = ylim = range(c(xlim, ylim))
+        } 
+
+        plot(PCA$x[,1], PCA$x[,2], ..., pch=pch, xlim=xlim, ylim=ylim,
 	        xlab=sprintf("PC1 (%.1f%%)", var_exp[1]/sum(var_exp) * 100),
         	ylab=sprintf("PC2 (%.1f%%)", var_exp[2]/sum(var_exp) * 100))
     }

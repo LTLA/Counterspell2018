@@ -5,7 +5,7 @@ source("functions.R")
 set.seed(600)
 ngenes = 800
 ncells = 500
-lambda = 2^rexp(ngenes)
+lambda = runif(ngenes, 0, 10)
 counts = rbind(
     matrix(rpois(ncells * ngenes, lambda=lambda), ncol=ncells),
     matrix(rpois(ncells * 50, lambda=rep(c(0, 5), ncells/2)), ncol=ncells, byrow=TRUE),
@@ -23,11 +23,11 @@ MGC = run_magic(t(counts), t_diffusion=10)
 
 pdf("pics/minor_with_magic.pdf")
 lmgc = lognormalize(t(MGC))
-run_PCA(lmgc, xlim=c(-15, 15), ylim=c(-15, 15), col=color, pch=pch)
+run_PCA(lmgc, same_xy=TRUE, col=color, pch=pch)
 dev.off()
 
 # Creating a PCA plot on the reference.
 pdf("pics/minor_without_magic.pdf")
 lref = lognormalize(counts)
-run_PCA(lref, xlim=c(-15, 15), ylim=c(-15, 15), col=color, pch=pch)
+run_PCA(lref, same_xy=TRUE, col=color, pch=pch)
 dev.off()

@@ -13,15 +13,14 @@ MGC = run_magic(t(counts), t_diffusion=10)
 
 pdf("pics/nostructure_with_magic.pdf")
 lmgc = lognormalize(t(MGC))
-plot_limits = c(-0.005, 0.005)
-run_PCA(lmgc, xlim=plot_limits, ylim=plot_limits)
+run_PCA(lmgc, same_xy=TRUE)
 plot_correlated(lmgc)
 dev.off()
 
 # Creating a PCA plot on the reference.
 pdf("pics/nostructure_without_magic.pdf")
 lref = lognormalize(counts)
-run_PCA(lref)
+run_PCA(lref, same_xy=TRUE)
 plot_correlated(lref)
 dev.off()
 

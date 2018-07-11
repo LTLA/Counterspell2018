@@ -5,7 +5,7 @@ source("functions.R")
 set.seed(400)
 ngenes = 900
 ncells = 500
-lambda = 2^rexp(ngenes)
+lambda = runif(ngenes, 0, 10)
 counts = rbind(
     matrix(rpois(ncells * ngenes, lambda=lambda), ncol=ncells),
     matrix(rpois(ncells * 50, lambda=rep(c(0, 5), each=ncells/2)), ncol=ncells, byrow=TRUE),
