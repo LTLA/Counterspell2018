@@ -48,6 +48,12 @@ plot_correlated = function(log_counts, ...) {
         list(r2=round(max_COR^2, 2))), text.col="red")
 }
 
+#' Calculates log-fold changes for all genes.
+compute_logFC = function(log_counts, groupings) {
+    all_groups = unique(groupings)
+    colMeans(log_counts[groupings==all_groups[1],]) - colMeans(log_counts[groupings==all_groups[2],])
+}
+
 #' Creates a heatmap with mean-centering and limits.
 create_heatmap = function(exprs, cluster, is_de, limit=0.5, cluster_cols, de_cols) {
     uniq_clusters = unique(cluster)
