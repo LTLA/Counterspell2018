@@ -15,7 +15,7 @@ counts = rbind(
 cluster = rep(1:2, each=ncells/2)
 cluster_cols = c(`1`="forestgreen", `2`="goldenrod")
 is_de = c(logical(ngenes), !logical(nrow(counts)-ngenes))
-de_cols = c(`TRUE`="lavender", `FALSE`="violet")    
+de_cols = c(`TRUE`="dodgerblue", `FALSE`="grey60")    
 
 # Creating a PCA plot on the log-normalized counts from MAGIC.
 library(Rmagic) 
