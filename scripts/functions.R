@@ -20,6 +20,14 @@ run_PCA = function(log_counts, plot=TRUE, pch=16, ..., xlim=NULL, ylim=NULL, sam
     return(invisible(var_exp))
 }
 
+#' Runs MAGIC on a gene count matrix, returns a transposed matrix.
+run_MAGIC = function(counts, ...) {
+    require(Rmagic) 
+    reticulate::use_python("python3")
+    normed = library.size.normalize(t(counts))
+    magic(sqrt(normed), t=10)$result # square root input. 
+}
+
 #' Computes log-transformed expression values; returns a transposed matrix.
 lognormalize = function(counts) {
     lib_size = colSums(counts)
@@ -28,7 +36,7 @@ lognormalize = function(counts) {
 }
 
 #' Identifies and plots the most correlated gene pair.
-plot_correlated = function(log_counts, ...) {
+plot_correlated = function(log_counts, ..., position="bottomright") {
     COR = cor(log_counts)
     diag(COR) = 0
     max_COR = max(COR, na.rm=TRUE)
@@ -44,7 +52,7 @@ plot_correlated = function(log_counts, ...) {
 
     fit <- lm(Y ~ X)
     abline(a=coef(fit)[1], b=coef(fit)[2], col="red")
-    legend("bottomright", bty="n", legend=substitute(R^2~"="~r2, 
+    legend(position, bty="n", legend=substitute(R^2~"="~r2, 
         list(r2=round(max_COR^2, 2))), text.col="red")
 }
 
