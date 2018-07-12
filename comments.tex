@@ -113,13 +113,12 @@ By performing diffusion, MAGIC can achieve aggressive denoising compared to othe
 However, this also runs the risk of introducing spurious structure in the denoised expression matrix.
 
 This effect is best demonstrated with a simple simulation.
-We applied MAGIC to a simulated matrix of Poisson-distributed counts that contained no structure.
+We applied MAGIC to a simulated matrix of Poisson-distributed counts that contained no structure other than modest differences in library size across cells.
 Upon performing a principal components analysis (PCA) on the denoised expression matrix, we observed a ``trajectory'' of cells along the first principal component (PC) (Figure~\ref{fig:nostructure}a) that was not present with the original expression matrix (Figure~\ref{fig:nostructure}b).
-This trajectory is a manifestation of spurious structure in a count matrix that should have been random.
-It likely arises from stochastic differences in the affinity matrix that are inflated during diffusion.
-Indeed, increasing the diffusion time exacerbated the consolidation of variance into the first PC (Figure~\ref{fig:nostructure}c), consistent with self-reinforcement of the diffusion process.
+This trajectory is a manifestation of spurious structure, likely arising from stochastic differences in the affinity matrix that are inflated during diffusion.
+These differences in affinity are probably driven by differences in variance across cells with different library sizes, given that library size normalization was performed to eliminate mean differences.
 While the creation of artificial structure is obviously undesirable, the interpretation of denoised expression values at the gene level is even more compromised.
-After running MAGIC, genes that were truly independent now appear to be strongly co-regulated (Figure~\ref{fig:nostructure}d), whereas no such effect is observed on the original data (Figure~\ref{fig:nostructure}e).
+Independent genes now appear to be strongly co-regulated (Figure~\ref{fig:nostructure}c) whereas no such effect is observed in the original data (Figure~\ref{fig:nostructure}d).
 
 \begin{figure}[btp]
 \centering
@@ -131,10 +130,6 @@ After running MAGIC, genes that were truly independent now appear to be strongly
     \includegraphics[width=\textwidth,trim=0mm 5mm 0mm 15mm,clip,page=1]{scripts/pics/nostructure_without_magic.pdf}
     \caption{}
 \end{subfigure}
-\begin{subfigure}[b]{\textwidth}
-    \includegraphics[width=\textwidth,trim=0mm 5mm 0mm 15mm,clip]{scripts/pics/nostructure_time.pdf}
-    \caption{}
-\end{subfigure}
 \begin{subfigure}[b]{0.49\textwidth}
     \includegraphics[width=\textwidth,trim=0mm 5mm 0mm 15mm,clip,page=2]{scripts/pics/nostructure_with_magic.pdf}
     \caption{}
@@ -143,14 +138,15 @@ After running MAGIC, genes that were truly independent now appear to be strongly
     \includegraphics[width=\textwidth,trim=0mm 5mm 0mm 15mm,clip,page=2]{scripts/pics/nostructure_without_magic.pdf}
     \caption{}
 \end{subfigure}
-\caption{Effects of applying MAGIC to a simulated dataset containing independently sampled Poisson counts with no structure.
-(a) Plot of the first two PCs after performing PCA on the log-transformed denoised expression matrix.
-Each point represents a cell and the percentage of variance explained by each PC is shown in parentheses.
+\caption{Effects of applying MAGIC to a simulated dataset containing independently sampled Poisson-distributed counts with no structure.
+(a) Plot of the first two PCs after performing PCA on the denoised expression matrix.
+Each point represents a cell, coloured according to its library size (purple-green-yellow gradient, from lowest to highest).
+The percentage of variance explained by each PC is shown in parentheses.
 (b) Same as (a) but on the log-transformed normalized counts without running MAGIC.
-(c) Effect of diffusion time on the percentage of variance explained by the first PC.
-(d) Log-denoised expression values of the two genes with the highest pairwise correlation, after running MAGIC.
+(c) Denoised expression values of the two genes with the highest pairwise correlation, after running MAGIC.
 Each point represents a cell.
-(e) Same as (d) but without running MAGIC.}
+The line of best fit and R$^2$ are also shown in red.
+(d) Same as (d) but on log-expression values without running MAGIC.}
 \label{fig:nostructure}
 \end{figure}
 
@@ -163,9 +159,7 @@ Application of MAGIC eliminated the secondary separation (Figure~\ref{fig:fourcl
 This is again a consequence of the diffusion process, where weak similarities between cells in $A$ and $B$ (or $C$ and $D$) are increasingly strengthened over diffusion time.
 More information is subsequently shared between those pairs of subpopulations during the denoising step.
 This squeezes the subpopulations together and eliminates geniune structure that is otherwise clearly visible (Figure~\ref{fig:fourclusters}b).
-At worst, this may lead one to conclude that $A$ and $B$ form a trajectory rather than being distinct subpopulations.
-Furthermore, the squeezing effect interferes with gene-level interpretation of the denosied expression values. 
-Log-fold changes are shrunk towards zero for the subset of genes responsible for the secondary separation (Figure~\ref{fig:fourclusters}c, d).
+Gene-level interpretation is also compromised as differences in expression are shrunk towards zero for the subset of genes responsible for the secondary separation (Figure~\ref{fig:fourclusters}c, d).
 
 \begin{figure}[btp]
 \centering
@@ -191,13 +185,13 @@ Each point represents a cell and is coloured green (subpopulations $A$ and $C$) 
 $A$ and $B$ are represented by open circles while $C$ and $D$ are represented by crosses.
 The percentage of variance explained by each PC is shown in parentheses.
 (b) Same as (a) but using the original counts.
-(c) Log-fold changes with respect to the primary or secondary separations, computed from the denoised expression values.
+(c) Differences in denoised expression with respect to the primary or secondary separations.
 Each point represents a gene and is coloured according to whether it is DE (blue) or not (grey).
-(d) Same as (c) but using the original (log-)counts.}
+(d) Same as (c) but for log-fold changes computed from the original counts.}
 \label{fig:fourclusters}
 \end{figure}
 
-We also inspected the gene-wise denoised expression profiles in another simulation involving two well-separated subpopulations.
+Finally, we inspected the gene-wise denoised expression profiles in another simulation involving two well-separated subpopulations.
 As expected, we observed strong separation between the two subpopulations regardless of whether MAGIC was used (Figure~\ref{fig:twoclusters}).
 However, MAGIC also introduced spurious differences in expression between the two subpopulations among the non-DE genes (Figure~\ref{fig:twoclusters}a).
 This is a consequence of sharing information between neighbouring cells, which squeezes the expression values for all cells towards their subpopulation means.
@@ -217,10 +211,11 @@ i.e., to recover subtle biological changes that would otherwise be masked by tec
     \includegraphics[width=\textwidth,page=1]{scripts/pics/clusters_without_magic.png}
     \caption{}
 \end{subfigure}
-\caption{Heatmap of log$_2$-expression values (a) after running MAGIC and (b) without running MAGIC, in a simulation containing two well-separated subpopulations of cells.
+\caption{Heatmaps of (a) denoised expression values after running MAGIC and (b) log$_2$-expression values without MAGIC, 
+in a simulation containing two well-separated subpopulations of cells.
 Each column represents a cell and is labelled according to the subpopulation (i.e., cluster) to which it belongs.
-Each row represents a gene that is sorted by log-fold change betwee subpopulations and labelled according to whether it is truly DE.
-All log-expression values are mean-centered along each row and capped at 0.2 for visibility.}
+Each row represents a gene, sorted by the difference between subpopulations and labelled according to whether it is truly DE.
+Expression values are mean-centered along each row and capped at 0.2 for visibility.}
 \label{fig:twoclusters}
 \end{figure}
 
