@@ -11,14 +11,13 @@ keep = rowMeans(counts) > 0.1
 counts = counts[keep,]
 
 library(Rmagic)
-MGC = run_magic(as.matrix(t(counts)), t_diffusion=10)
+MGC = run_MAGIC(counts, t=10)
 
 # Performing PCA on the result, compared to the original.
 set.seed(1000)    
 library(irlba)
-lmgc = lognormalize(t(MGC))
-mgc_PCA = prcomp_irlba(lmgc, n=20)
-total_var_mgc = sum(apply(lmgc, 2, var))
+mgc_PCA = prcomp_irlba(MGC, n=20)
+total_var_mgc = sum(apply(MGC, 2, var))
 
 lcounts = lognormalize(as.matrix(counts))
 normal_PCA = prcomp_irlba(lcounts, n=20)
@@ -26,7 +25,7 @@ total_var_normal = sum(apply(lcounts, 2, var))
 
 # Creating plots.
 pdf("pics/293t_results.pdf")
-discolored = mgc_PCA$x[,2] > 10
+discolored = mgc_PCA$x[,2] < 0 & mgc_PCA$x[,1] < -5
 col = ifelse(discolored, "forestgreen", "goldenrod")
 
 plot(mgc_PCA$x[,1], mgc_PCA$x[,2], 
