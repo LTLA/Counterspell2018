@@ -19,11 +19,11 @@ de_cols = c(`TRUE`="dodgerblue", `FALSE`="grey60")
 
 # Creating a PCA plot on the log-normalized counts from MAGIC.
 library(Rmagic) 
-MGC = run_magic(t(counts), t_diffusion=10)
+reticulate::use_python("python3")
+MGC = run_MAGIC(counts, t=10)
 
 png("pics/clusters_with_magic.png", units="in", width=7, height=7, res=150, pointsize=12)
-lmgc = lognormalize(t(MGC))
-create_heatmap(t(lmgc), cluster=cluster, is_de=is_de, limit=0.2, cluster_cols=cluster_cols, de_cols=de_cols)
+create_heatmap(t(MGC), cluster=cluster, is_de=is_de, limit=0.2, cluster_cols=cluster_cols, de_cols=de_cols)
 dev.off()
 
 # Creating a PCA plot on the reference.
