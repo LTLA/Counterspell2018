@@ -29,8 +29,8 @@ run_PCA(MGC, same_xy=TRUE, col=color, pch=pch)
 
 plot(compute_logFC(MGC, primary_sep),
     compute_logFC(MGC, secondary_sep),
-    xlab=expression(Log[2]~"fold change (primary)"),
-    ylab=expression(Log[2]~"fold change (secondary)"),
+    xlab="Difference (primary)",
+    ylab="Difference (secondary)",
     xlim=c(-2, 2), ylim=c(-2, 2),
     col=de_cols, pch=16)
 dev.off()

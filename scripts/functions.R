@@ -78,9 +78,9 @@ create_heatmap = function(exprs, cluster, is_de, limit=0.5, cluster_cols, de_col
 
     require(pheatmap)
     pheatmap(exprs, cluster_col=FALSE, cluster_row=FALSE,
-        annotation_col=data.frame(Cluster=as.character(cluster), row.names=colnames(exprs)),
+        annotation_col=data.frame(Subpop=as.character(cluster), row.names=colnames(exprs)),
         annotation_row=data.frame(DE=as.character(is_de), row.names=rownames(exprs)),
-        annotation_colors=list(Cluster=cluster_cols, DE=de_cols),
+        annotation_colors=list(Subpop=cluster_cols, DE=de_cols),
         show_rownames=FALSE, show_colnames=FALSE)
 }
 
