@@ -13,7 +13,7 @@ counts = counts[keep,]
 MGC = run_MAGIC(as.matrix(counts), t=10)
 
 # Performing t-SNE on the result, compared to the original.
-set.seed(1000)    
+set.seed(2000)
 library(Rtsne)
 mgc_TSNE = Rtsne(MGC, pca=FALSE, perplexity=90)
 
@@ -22,6 +22,7 @@ normal_TSNE = Rtsne(lcounts, pca=FALSE, perplexity=90)
 
 # Creating plots.
 pdf("pics/ercc_results.pdf")
-plot(mgc_TSNE$Y[,1], mgc_TSNE$Y[,2], xlab="TSNE1", ylab="TSNE2", pch=16)
-plot(normal_TSNE$Y[,1], normal_TSNE$Y[,2], xlab="TSNE1", ylab="TSNE2", pch=16)
+col = ifelse(mgc_TSNE$Y[,1] > -5, "forestgreen", "goldenrod")
+plot(mgc_TSNE$Y[,1], mgc_TSNE$Y[,2], xlab="TSNE1", ylab="TSNE2", pch=16, col=col)
+plot(normal_TSNE$Y[,1], normal_TSNE$Y[,2], xlab="TSNE1", ylab="TSNE2", pch=16, col=col)
 dev.off()
