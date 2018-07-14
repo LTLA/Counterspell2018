@@ -12,7 +12,6 @@ library(viridis)
 col = viridis(100)[cut(size_fac, 100)]
 
 # Creating a PCA plot on the log-normalized counts from MAGIC.
-library(Rmagic) 
 MGC = run_MAGIC(counts, t=10)
 
 pdf("pics/nostructure_with_magic.pdf")

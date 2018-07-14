@@ -21,7 +21,6 @@ color = ifelse(secondary_sep, "forestgreen", "goldenrod")
 de_cols = rep(c("grey60", "dodgerblue"), c(ngenes, nrow(counts) - ngenes))
 
 # Creating a PCA plot on the log-normalized counts from MAGIC.
-library(Rmagic)
 MGC = run_MAGIC(counts, t=10)
 
 pdf("pics/minor_with_magic.pdf")

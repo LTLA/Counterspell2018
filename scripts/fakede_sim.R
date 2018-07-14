@@ -18,8 +18,6 @@ is_de = c(logical(ngenes), !logical(nrow(counts)-ngenes))
 de_cols = c(`TRUE`="dodgerblue", `FALSE`="grey60")    
 
 # Creating a PCA plot on the log-normalized counts from MAGIC.
-library(Rmagic) 
-reticulate::use_python("python3")
 MGC = run_MAGIC(counts, t=10)
 
 png("pics/clusters_with_magic.png", units="in", width=7, height=7, res=150, pointsize=12)

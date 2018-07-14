@@ -10,7 +10,6 @@ rownames(counts) = genes[,1]
 keep = rowMeans(counts) > 0.1
 counts = counts[keep,]
 
-library(Rmagic)
 MGC = run_MAGIC(as.matrix(counts), t=10)
 
 # Performing t-SNE on the result, compared to the original.

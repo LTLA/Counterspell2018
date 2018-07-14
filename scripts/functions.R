@@ -25,7 +25,7 @@ run_MAGIC = function(counts, ...) {
     require(Rmagic) 
     reticulate::use_python("python3")
     normed = library.size.normalize(t(counts))
-    magic(sqrt(normed), t=10)$result # square root input. 
+    magic(sqrt(normed), ...)$result # square root input. 
 }
 
 #' Computes log-transformed expression values; returns a transposed matrix.
