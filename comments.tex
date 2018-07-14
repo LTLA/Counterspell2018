@@ -222,7 +222,7 @@ Expression values are mean-centered along each row and capped at 0.2 for visibil
 
 To demonstrate that our concerns are not purely academic, we applied MAGIC to two publicly available data sets from 10X Genomics \cite{zheng2017massively}.
 The first data set contains only ERCC spike-in transcripts without any cells.
-After using MAGIC, the libraries separated into two groups on a $t$-stochastic neighbour embedding \cite{van2008visualizing} plot (Figure~\ref{fig:realdata}a).
+After using MAGIC, the libraries separated into two groups on a $t$-stochastic neighbour embedding ($t$-SNE) \cite{van2008visualizing} plot (Figure~\ref{fig:realdata}a).
 No such separation was observed in the original data (Figure~\ref{fig:realdata}b), which is more expected given the fixed composition of the ERCC spike-in mixture.
 The second data set contained a homogenous population of cells from the 293T cell line.
 Here, MAGIC amplified the separation between two subpopulations of cells that were otherwise weakly separated (Figure~\ref{fig:realdata}c),
@@ -249,9 +249,12 @@ the most critical interpretation would be that MAGIC is creating artificial stru
     \includegraphics[width=\textwidth,page=2]{scripts/pics/293t_results.pdf}
     \caption{}
 \end{subfigure}
-\caption{Plots of the first two PCs for the ERCC (a, b) and 293T (c, d) data sets from 10X Genomics, with (a, c) and without using MAGIC (b, d).
-Each point represents a cell and the percentage of variance explained by each PC is shown in parentheses.
-For each data set, cells in the two putative subpopulations are distinguished by colour.}
+\caption{Dimensionality reduction results for the ERCC (a, b) and 293T (c, d) data sets from 10X Genomics, with (a, c) and without using MAGIC (b, d).
+In each plot, each point represents a cell or a cell-equivalent library.
+The ERCC data set is visualized using a $t$-SNE plot with a perplexity of 90.
+The 293T data set is visualized using a PCA plot, where the percentage of variance explained by each PC is shown in parentheses.
+For each data set, cells in the two putative subpopulations are distinguished by colour.
+}
 \label{fig:realdata}
 \end{figure}
 
