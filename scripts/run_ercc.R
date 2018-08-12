@@ -22,7 +22,7 @@ counts <- counts(sce)
 counts <- counts[,colSums(counts) > 100] # retaining some empty droplets for testing.
 counts <- counts[rowMeans(counts) > 0.01,]
 
-MGC <- run_MAGIC(as.matrix(counts), t=10)
+MGC <- run_MAGIC(as.matrix(counts))
 lcounts <- as.matrix(lognormalize(counts))
 
 ##############################################
@@ -30,12 +30,13 @@ lcounts <- as.matrix(lognormalize(counts))
 # Performing t-SNE on the result, compared to the original.
 set.seed(2000)
 library(Rtsne)
-mgc_TSNE <- Rtsne(MGC, pca=FALSE, perplexity=30)
-normal_TSNE <- Rtsne(lcounts, pca=FALSE, perplexity=30)
+mgc_TSNE <- Rtsne(MGC, pca=FALSE, perplexity=50)
+normal_TSNE <- Rtsne(lcounts, pca=FALSE, perplexity=50)
 
 # Creating plots.
 pdf("pics/ercc_results.pdf")
-col = viridis::viridis(100)[cut(log(colSums(counts)), 100)]
+par(cex.lab=1.4)
+col <- viridis::viridis(100)[cut(log(colSums(counts)), 100)]
 plot(mgc_TSNE$Y[,1], mgc_TSNE$Y[,2], xlab="TSNE1", ylab="TSNE2", pch=16, col=col)
 plot(normal_TSNE$Y[,1], normal_TSNE$Y[,2], xlab="TSNE1", ylab="TSNE2", pch=16, col=col)
 dev.off()

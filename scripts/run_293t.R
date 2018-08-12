@@ -21,7 +21,7 @@ library(Matrix)
 counts <- counts(sce)
 counts <- counts[rowMeans(counts) > 0.01,]
 
-MGC <- run_MAGIC(counts, t=10)
+MGC <- run_MAGIC(counts)
 lcounts <- lognormalize(counts)
 
 ##############################################
@@ -39,7 +39,7 @@ total_var_normal <- sum(apply(lcounts, 2, var))
 
 # Creating plots.
 pdf("pics/293t_results.pdf")
-discolored = mgc_PCA$x[,2] > 0 & mgc_PCA$x[,1] < -5
+discolored = mgc_PCA$x[,2] < 0 & mgc_PCA$x[,1] < -5
 col = ifelse(discolored, "forestgreen", "goldenrod")
 
 plot(mgc_PCA$x[,1], mgc_PCA$x[,2], 
