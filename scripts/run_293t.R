@@ -1,26 +1,41 @@
+# This script tests the behaviour of MAGIC on the public 293T data from 10X Genomics.
+
 source("functions.R")
 
-# Using the public 293T data at:
-# https://support.10xgenomics.com/single-cell-gene-expression/datasets/1.1.0/293t
+##############################################
+
+library(BiocFileCache)
+bfc <- BiocFileCache(ask=FALSE)
+fname <- bfcrpath(bfc, "http://cf.10xgenomics.com/samples/cell-exp/1.1.0/293t/293t_filtered_gene_bc_matrices.tar.gz")
+tempdir <- tempfile()
+dir.create(tempdir)
+untar(fname, exdir=tempdir)
+
+# Reading in the libraries.
+library(DropletUtils)
+sce <- read10xCounts(file.path(tempdir, "filtered_matrices_mex/hg19"))
+
+##############################################
 
 library(Matrix)
-counts = readMM("293t/hg19/matrix.mtx")
-genes = read.table("293t/hg19/genes.tsv")
-rownames(counts) = genes[,1]
-keep = rowMeans(counts) > 0.1
-counts = counts[keep,]
+counts <- counts(sce)
+counts <- counts[rowMeans(counts) > 0.1,]
 
-MGC = run_MAGIC(counts, t=10)
+MGC <- run_MAGIC(counts, t=10)
+lcounts <- lognormalize(counts)
+
+##############################################
 
 # Performing PCA on the result, compared to the original.
 set.seed(1000)    
 library(irlba)
-mgc_PCA = prcomp_irlba(MGC, n=20)
-total_var_mgc = sum(apply(MGC, 2, var))
+mgc_PCA <- prcomp_irlba(MGC, n=20)
+total_var_mgc <- sum(apply(MGC, 2, var))
 
-lcounts = lognormalize(as.matrix(counts))
-normal_PCA = prcomp_irlba(lcounts, n=20)
-total_var_normal = sum(apply(lcounts, 2, var))
+normal_PCA <- prcomp_irlba(lcounts, n=20)
+total_var_normal <- sum(apply(lcounts, 2, var))
+
+##############################################
 
 # Creating plots.
 pdf("pics/293t_results.pdf")
