@@ -19,10 +19,8 @@ sce <- read10xCounts(file.path(tempdir, "matrices_mex/ercc92"))
 
 library(Matrix)
 counts <- counts(sce)
-keep <- colSums(counts) > 100
-counts <- counts[,keep]
-keep <- rowMeans(counts) > 0.1
-counts <- counts[keep,]
+counts <- counts[,colSums(counts) > 100] # retaining some empty droplets for testing.
+counts <- counts[rowMeans(counts) > 0.01,]
 
 MGC <- run_MAGIC(as.matrix(counts), t=10)
 lcounts <- as.matrix(lognormalize(counts))
