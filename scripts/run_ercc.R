@@ -1,28 +1,43 @@
+# This script tests the behaviour of MAGIC on the public ERCC data from 10X Genomics.
+
 source("functions.R")
 
-# Using the public ERCC data at:
-# https://support.10xgenomics.com/single-cell-gene-expression/datasets/1.1.0/ercc
+##############################################
+
+library(BiocFileCache)
+bfc <- BiocFileCache(ask=FALSE)
+fname <- bfcrpath(bfc, "http://cf.10xgenomics.com/samples/cell-exp/1.1.0/ercc/ercc_raw_gene_bc_matrices.tar.gz")
+tempdir <- tempfile()
+dir.create(tempdir)
+untar(fname, exdir=tempdir)
+
+# Reading in the libraries.
+library(DropletUtils)
+sce <- read10xCounts(file.path(tempdir, "matrices_mex/ercc92"))
+
+##############################################
 
 library(Matrix)
-counts = readMM("ercc/ercc92/matrix.mtx")
-genes = read.table("ercc/ercc92/genes.tsv")
-rownames(counts) = genes[,1]
-keep = rowMeans(counts) > 0.1
-counts = counts[keep,]
+counts <- counts(sce)
+keep <- colSums(counts) > 100
+counts <- counts[,keep]
+keep <- rowMeans(counts) > 0.1
+counts <- counts[keep,]
 
-MGC = run_MAGIC(as.matrix(counts), t=10)
+MGC <- run_MAGIC(as.matrix(counts), t=10)
+lcounts <- as.matrix(lognormalize(counts))
+
+##############################################
 
 # Performing t-SNE on the result, compared to the original.
 set.seed(2000)
 library(Rtsne)
-mgc_TSNE = Rtsne(MGC, pca=FALSE, perplexity=90)
-
-lcounts = lognormalize(as.matrix(counts))
-normal_TSNE = Rtsne(lcounts, pca=FALSE, perplexity=90)
+mgc_TSNE <- Rtsne(MGC, pca=FALSE, perplexity=30)
+normal_TSNE <- Rtsne(lcounts, pca=FALSE, perplexity=30)
 
 # Creating plots.
 pdf("pics/ercc_results.pdf")
-col = ifelse(mgc_TSNE$Y[,1] > -5, "forestgreen", "goldenrod")
+col = viridis::viridis(100)[cut(log(colSums(counts)), 100)]
 plot(mgc_TSNE$Y[,1], mgc_TSNE$Y[,2], xlab="TSNE1", ylab="TSNE2", pch=16, col=col)
 plot(normal_TSNE$Y[,1], normal_TSNE$Y[,2], xlab="TSNE1", ylab="TSNE2", pch=16, col=col)
 dev.off()
