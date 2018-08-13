@@ -71,9 +71,11 @@
 \usepackage{multirow}
 
 % Other required things:
-\usepackage{color}
 \usepackage{subcaption}
 \captionsetup[subfigure]{justification=centering}
+\usepackage{xcolor}
+\usepackage[printwatermark]{xwatermark}
+\newwatermark[allpages,color=gray!20,angle=45,scale=3,xpos=0,ypos=0]{CONFIDENTIAL}
 
 % document begins here
 \begin{document}
@@ -82,16 +84,16 @@
 % title goes here:
 \begin{flushleft}
 {\Large
-    \textbf\newline{Too much magic: avoiding illusions in single cell RNA sequencing data analysis}
+    \textbf\newline{Avoiding illusions in single cell RNA sequencing data analysis}
 }
 \newline
 
 % authors go here:
 %\\
-Timothy Curtis\textsuperscript{1,*}
+Aaron Lun\textsuperscript{1,*}
 \\
 \bigskip
-\bf{1} Diagon Institute of Computational Biology, London, United Kingdom \\
+\bf{1} Cancer Research UK Cambridge Institute, University of Cambridge, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom \\
 \bigskip
 
 \end{flushleft}
