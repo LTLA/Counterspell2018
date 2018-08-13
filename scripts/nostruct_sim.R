@@ -15,7 +15,7 @@ MGC <- run_MAGIC(counts, t=10)
 lref <- lognormalize(counts)
 
 # Creating a PCA plot on the log-normalized counts from MAGIC.
-pdf("pics/nostructure.pdf")
+pdf("pics/nostruct.pdf")
 par(cex.lab=1.4)
 run_PCA(MGC, same_xy=TRUE, col=col)
 plot_correlated(MGC)

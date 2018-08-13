@@ -34,6 +34,7 @@ for (i in seq_along(p.log)) {
 }
 
 pdf("pics/fakede.pdf")
+par(cex.lab=1.4)
 breaks <- seq(0, 1, length.out=50)
 hist(p.mgc[!is_de], breaks=breaks, col="violet", xlab="p-value", main="")
 hist(p.log[!is_de], breaks=breaks, col="lavender", xlab="p-value", main="")

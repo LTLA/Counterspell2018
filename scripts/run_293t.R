@@ -39,6 +39,7 @@ total_var_normal <- sum(apply(lcounts, 2, var))
 
 # Creating plots.
 pdf("pics/293t_results.pdf")
+par(cex.lab=1.4)
 discolored = mgc_PCA$x[,2] < 0 & mgc_PCA$x[,1] < -5
 col = ifelse(discolored, "forestgreen", "goldenrod")
 
