@@ -116,12 +116,12 @@ By performing diffusion, MAGIC can achieve aggressive denoising compared to othe
 However, this also runs the risk of distorting the biological structure in the denoised expression matrix.
 
 This effect is best demonstrated with a simple simulation.
-We applied MAGIC to a simulated matrix of Poisson-distributed counts that contained no structure other than modest differences in library size across cells.
-Upon performing a principal components analysis (PCA) on the denoised expression matrix, we observed a ``trajectory'' of cells along the first principal component (PC) (Figure~\ref{fig:nostructure}a) that was not present with the original expression matrix (Figure~\ref{fig:nostructure}b).
+We simulated a matrix of Poisson-distributed counts that contained no structure other than modest differences in library size across cells (Figure~\ref{fig:nostructure}a).
+Upon applying MAGIC and performing a principal components analysis (PCA) on the denoised expression matrix, we observed a ``trajectory'' of cells along the first principal component (PC) (Figure~\ref{fig:nostructure}b) that was not present with the original expression matrix.
 This trajectory is a manifestation of spurious structure, likely arising from stochastic differences in the affinity matrix that are inflated during diffusion.
 These initial differences in affinity are probably driven by differences in variance when library sizes are variable across cells, assuming that mean differences are eliminated by library size normalization.
 While the creation of artificial structure is obviously undesirable, the interpretation of denoised expression values at the gene level is even more compromised.
-Independent genes now appear to be strongly co-regulated (Figure~\ref{fig:nostructure}c) whereas no such effect is observed in the original data (Figure~\ref{fig:nostructure}d).
+All genes are known to be independent in this simulation (Figure~\ref{fig:nostructure}c) but now appear to be strongly co-regulated (Figure~\ref{fig:nostructure}d).
 
 \begin{figure}[btp]
 \centering
@@ -157,12 +157,11 @@ One might dismiss the previous simulation as being somewhat pathological.
 After all, there are no biological systems that exhibit no structure whatsoever.
 Perhaps a more pertinent question would be: how does MAGIC perform in the presence of genuine structure? 
 To explore this, we performed another simulation involving four equally sized subpopulations of cells, denoted here as $A$, $B$, $C$ and $D$.
-The primary separation occurs between $\{A, B\}$ and $\{C, D\}$ and the secondary separation occurs between $A/B$ and $C/D$.
-Application of MAGIC eliminated the secondary separation (Figure~\ref{fig:fourclusters}a), merging $A$ with $B$ and $C$ with $D$.
+The primary separation occurs between $\{A, B\}$ and $\{C, D\}$ and the secondary separation occurs between $\{A, C\}$ and $\{B, D\}$ (Figure~\ref{fig:fourclusters}a).
+Application of MAGIC eliminated the secondary separation (Figure~\ref{fig:fourclusters}b), merging $A$ with $B$ and $C$ with $D$.
 This is again a consequence of the diffusion process, where weak similarities between cells in $A$ and $B$ (or $C$ and $D$) are increasingly strengthened over diffusion time.
-More information is subsequently shared between those pairs of subpopulations during the denoising step.
-This squeezes the subpopulations together and eliminates geniune structure that is otherwise clearly visible (Figure~\ref{fig:fourclusters}b).
-Gene-level interpretation is also compromised as differences in expression are shrunk towards zero for the subset of genes responsible for the secondary separation (Figure~\ref{fig:fourclusters}c, d).
+More information is subsequently shared between those pairs of subpopulations during the denoising step, squeezing them together and eliminating geniune structure.
+Gene-level interpretation is also compromised as differences in expression between subpopulations are shrunk towards zero for the subset of genes responsible for the secondary separation (Figure~\ref{fig:fourclusters}c, d).
 
 \begin{figure}[btp]
 \centering
@@ -189,20 +188,19 @@ $A$ and $B$ are represented by open circles while $C$ and $D$ are represented by
 The percentage of variance explained by each PC is shown in parentheses.
 (b) Same as (a) but using the denoised expresssion values from MAGIC.
 (c) Differences in log-expression with respect to the primary or secondary separations.
-Each point represents a gene and is coloured according to whether it is DE (blue) or not (grey).
+Each point represents a gene that is differentially expressed (blue) or not (grey).
 (d) Same as (c) but for denoised expression values from MAGIC.}
 \label{fig:fourclusters}
 \end{figure}
 
-Finally, we inspected the gene-wise denoised expression profiles in another simulation involving two well-separated subpopulations.
-As expected, we observed strong separation between the two subpopulations regardless of whether MAGIC was used (Figure~\ref{fig:twoclusters}).
-However, MAGIC also introduced spurious differences in expression between the two subpopulations among the non-DE genes (Figure~\ref{fig:twoclusters}a).
+Finally, we examined the consequences of using the denoised expression values in a more quantitative analysis.
+We simulated a data set with two well-separated subpopulations and computed $p$-values for the genes that were not differentially expressed (DE) between those subpopulations.
+As the null hypothesis is true, we expect that the distribution of $p$-values is uniform.
+This is indeed the case when the log-transformed normalized expression values are used (Figure~\ref{fig:twoclusters}a).
+However, the $p$-values computed from the denoised expression values are strongly skewed towards zero (Figure~\ref{fig:twoclusters}b).
 This is a consequence of sharing information between neighbouring cells, which squeezes the expression values for all cells towards their subpopulation means.
-Estimation uncertainty will yield a different sample mean for each subpopulation, even for non-DE genes.
-These small differences are amplified by aggressive denoising, manifesting as in strong differences in the distribution of expression values betweeen subpopulations.
-One could argue that this spurious DE pattern is not of concern as the log-fold changes for the genes involved are relatively small (less than 0.2 in most cases).
-However, this attitude is not consistent with the intention behind the use of denoising in the first place, 
-i.e., to recover subtle biological changes that would otherwise be masked by technical noise.
+As a result, the testing framework cannot properly account for the estimation uncertainty of the subpopulation-specific sample means.
+This leads to loss of type I error control and false positives, i.e., detection of all non-DE genes as being significantly DE.
 
 \begin{figure}[btp]
 \centering
@@ -221,15 +219,15 @@ All $p$-values were computed using the Wilcoxon rank-sum test.}
 \end{figure}
 
 To demonstrate that our concerns are not purely academic, we applied MAGIC to two publicly available data sets from 10X Genomics \cite{zheng2017massively}.
-The first data set contains only ERCC spike-in transcripts without any cells.
-After using MAGIC, the libraries separated into two groups on a $t$-stochastic neighbour embedding ($t$-SNE) \cite{van2008visualizing} plot (Figure~\ref{fig:realdata}a).
-No such separation was observed in the original data (Figure~\ref{fig:realdata}b), which is more expected given the fixed composition of the ERCC spike-in mixture.
-The second data set contained a homogenous population of cells from the 293T cell line.
-Here, MAGIC amplified the separation between two subpopulations of cells that were otherwise weakly separated (Figure~\ref{fig:realdata}c),
-and created clear linear trajectories within each of those subpopulations.
-The generation of such strong signal is not consistent with a homogeneous population and is not observed in the original data (Figure~\ref{fig:realdata}d).
+The first data set involves only ERCC spike-in transcripts in gel beads or empty droplets.
+When a $t$-stochastic neighbour embedding ($t$-SNE) \cite{van2008visualizing} plot was constructed on the log-normalized expression values, the gel beads and empty droplets formed distinct clusters distinguished by library size (Figure~\ref{fig:realdata}a), as expected.
+However, the application of MAGIC produced a trajectory between the beads and the empty droplets (Figure~\ref{fig:realdata}b).
+This is attributable to the data diffusion procedure where information is shared between otherwise distinct clusters.
+The second data set contained a homogenous population of cells from the 293T cell line (Figure~\ref{fig:realdata}c).
+Here, MAGIC amplified the separation between two subpopulations of cells that were otherwise weakly separated,
+and created clear linear trajectories within each of those subpopulations (Figure~\ref{fig:realdata}d).
 The most generous interpretation of these results would be that there was some underlying biology in each population that was not recovered with other analysis methods;
-the most critical interpretation would be that MAGIC is creating artificial structure.
+the most critical interpretation would be that MAGIC is creating artificial structure in a homogeneous population.
 
 \begin{figure}[btp]
 \centering
