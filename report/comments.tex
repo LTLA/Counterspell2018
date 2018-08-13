@@ -142,14 +142,14 @@ Independent genes now appear to be strongly co-regulated (Figure~\ref{fig:nostru
     \caption{}
 \end{subfigure}
 \caption{Effects of applying MAGIC to a simulated dataset containing independently sampled Poisson-distributed counts with no structure.
-(a) Plot of the first two PCs after performing PCA on the denoised expression matrix.
+(a) Plot of the first two PCs after performing PCA on the log-normalized expression matrix.
 Each point represents a cell, coloured according to its library size (purple-green-yellow gradient, from lowest to highest).
 The percentage of variance explained by each PC is shown in parentheses.
-(b) Same as (a) but on the log-transformed normalized counts without running MAGIC.
-(c) Denoised expression values of the two genes with the highest pairwise correlation after running MAGIC.
+(b) Same as (a) but on the denoised expression values after running MAGIC.
+(c) Log-expression values of the two genes with the highest pairwise correlation.
 Each point represents a cell.
-The line of best fit and R$^2$ are also shown in red.
-(d) Same as (d) but on log-expression values without running MAGIC.}
+The line of best fit and R$^2$ are shown in red.
+(d) Same as (c), for the most correlated gene pair with denoised expression values after running MAGIC.}
 \label{fig:nostructure}
 \end{figure}
 
@@ -183,14 +183,14 @@ Gene-level interpretation is also compromised as differences in expression are s
     \caption{}
 \end{subfigure}
 \caption{Effects of applying MAGIC to a simulated dataset containing four well-separated subpopulations of cells.
-(a) Plot of the first two PCs, created using the denoised expression values from MAGIC.
+(a) Plot of the first two PCs, created using log-normalized expression values.
 Each point represents a cell and is coloured green (subpopulations $A$ and $C$) or orange ($B$ or $D$).
 $A$ and $B$ are represented by open circles while $C$ and $D$ are represented by crosses.
 The percentage of variance explained by each PC is shown in parentheses.
-(b) Same as (a) but using the original counts.
-(c) Differences in denoised expression with respect to the primary or secondary separations.
+(b) Same as (a) but using the denoised expresssion values from MAGIC.
+(c) Differences in log-expression with respect to the primary or secondary separations.
 Each point represents a gene and is coloured according to whether it is DE (blue) or not (grey).
-(d) Same as (c) but for log-fold changes computed from the original counts.}
+(d) Same as (c) but for denoised expression values from MAGIC.}
 \label{fig:fourclusters}
 \end{figure}
 
@@ -214,11 +214,9 @@ i.e., to recover subtle biological changes that would otherwise be masked by tec
     \includegraphics[width=\textwidth,page=1]{../scripts/pics/fakede.pdf}
     \caption{}
 \end{subfigure}
-\caption{Heatmaps of (a) denoised expression values after running MAGIC and (b) log$_2$-expression values without MAGIC, 
-in a simulation containing two well-separated subpopulations of cells.
-Each column represents a cell and is labelled according to the subpopulation (i.e., cluster) to which it belongs.
-Each row represents a gene, sorted by the difference between subpopulations and labelled according to whether it is truly DE.
-Expression values are mean-centered along each row and capped at 0.2 for visibility.}
+\caption{Distribution of $p$-values for non-DE genes, 
+in a comparison between two simulated groups of cells on (a) log-normalized expression values or (b) denoised expression values from MAGIC.
+All $p$-values were computed using the Wilcoxon rank-sum test.}
 \label{fig:twoclusters}
 \end{figure}
 
@@ -236,27 +234,27 @@ the most critical interpretation would be that MAGIC is creating artificial stru
 \begin{figure}[btp]
 \centering
 \begin{subfigure}[b]{0.49\textwidth}
-    \includegraphics[width=\textwidth,page=1]{../scripts/pics/ercc_results.pdf}
-    \caption{}
-\end{subfigure}
-\begin{subfigure}[b]{0.49\textwidth}
     \includegraphics[width=\textwidth,page=2]{../scripts/pics/ercc_results.pdf}
     \caption{}
 \end{subfigure}
 \begin{subfigure}[b]{0.49\textwidth}
-    \includegraphics[width=\textwidth,page=1]{../scripts/pics/293t_results.pdf}
+    \includegraphics[width=\textwidth,page=1]{../scripts/pics/ercc_results.pdf}
     \caption{}
 \end{subfigure}
 \begin{subfigure}[b]{0.49\textwidth}
     \includegraphics[width=\textwidth,page=2]{../scripts/pics/293t_results.pdf}
     \caption{}
 \end{subfigure}
-\caption{Dimensionality reduction results for the ERCC (a, b) and 293T (c, d) data sets from 10X Genomics, with (a, c) and without using MAGIC (b, d).
-In each plot, each point represents a cell or a cell-equivalent library.
-The ERCC data set is visualized using a $t$-SNE plot with a perplexity of 90.
-The 293T data set is visualized using a PCA plot, where the percentage of variance explained by each PC is shown in parentheses.
-For each data set, cells in the two putative subpopulations are distinguished by colour.
-}
+\begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth,page=1]{../scripts/pics/293t_results.pdf}
+    \caption{}
+\end{subfigure}
+\caption{Dimensionality reduction results after applying MAGIC to real scRNA-seq data.
+(a, b) $t$-SNE plots of the ERCC data set (a) before and (b) after applying MAGIC.
+Each point represents a cell or a cell-equivalent library, coloured according to the library size (purple for lowest, yellow for highest).
+(c, d) PCA plots of the 293T data set (c) before and (d) after MAGIC.
+Each point represents a cell, coloured by separation along PC1 in (d).
+The percentage of variance explained by each PC is shown in parentheses.}
 \label{fig:realdata}
 \end{figure}
 
