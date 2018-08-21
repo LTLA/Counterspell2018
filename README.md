@@ -10,3 +10,5 @@ The `scripts` subdirectory contains R code to reproduce the analyses described i
 - `run_ercc.R`, to examine the effect of using MAGIC on the ERCC data set from 10X Genomics.
 - `run_293t.R`, to examine the effect of using MAGIC on the 293T data set from 10X Genomics.
 - `run_tb.R`, to test behaviour when combining B and T cells.
+
+See [here](https://jmlab-gitlab.cri.camres.org/aaron/technical-reports/raw/master/antimagic.pdf) for a compiled PDF of the report.
