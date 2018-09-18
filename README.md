@@ -1,7 +1,7 @@
 # Criticisms of MAGIC in scRNA-seq data
 
 This repository contains code to explore some of the consequences of using MAGIC in scRNA-seq data.
-The `report` subdirectory contains LaTeX files for the report - see [here](https://jmlab-gitlab.cruk.cam.ac.uk/aaron/technical-reports/raw/master/antimagic.pdf) for a compiled PDF.
+The `report` subdirectory contains LaTeX files for the report - see [here](https://jmlab-gitlab.cruk.cam.ac.uk/miscellaneous/technical-reports/raw/master/antimagic.pdf) for a compiled PDF.
 The `scripts` subdirectory contains R code to reproduce the analyses described in the report:
 
 - `nostruct_sim.R`, to examine the effect of using MAGIC in a simulation without any structure.
